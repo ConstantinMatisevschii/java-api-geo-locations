@@ -1,0 +1,2346 @@
+openapi: 3.0.3
+
+info:
+  title: Geo Locations Api
+  description: Application designated to manage geo locations
+  version: 0.0.1
+
+tags:
+  - name: Area
+    description: Manage areas
+  - name: Location
+    description: Manage locations objects
+  - name: Parking
+    description: Manage parking objects
+  - name: Road
+    description: Manage road objects
+  - name: Image
+    description: Manage image objects
+  - name: LocationInfo
+    description: Manage location info objects
+  - name: Post
+    description: Manage post objects
+  - name: PostLocation
+    description: Manage post's locations objects
+  - name: TopLocation
+    description: Manage top locations objects
+paths:
+  /api/location:
+    post:
+      tags:
+        - Location
+      description: Save a new location
+      operationId: saveLocation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+      responses:
+        '200':
+          description: A new location has been created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/location/{updateLocationId}:
+    put:
+      tags:
+        - Location
+      description: Update existing location
+      operationId: updateLocation
+      parameters:
+        - in: path
+          name: updateLocationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the location to update
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+      responses:
+        '200':
+          description: Location has been updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/location/{getLocationId}:
+    get:
+      tags:
+        - Location
+      description: Get a location by ID
+      operationId: getLocationById
+      parameters:
+        - in: path
+          name: getLocationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the location to get
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The location has been found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/location/{delLocationId}:
+    delete:
+      tags:
+        - Location
+      description: Delete a location using it's ID
+      operationId: deleteLocationById
+      parameters:
+        - in: path
+          name: delLocationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the location to delete
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The location has been deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/locations:
+    get:
+      tags:
+        - Location
+      description: Get all locations
+      operationId: getAllLocations
+      responses:
+        '200':
+          description: The locations has been found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/locations/find:
+    get:
+      tags:
+        - Location
+      description: Get all locations
+      operationId: findAllLocations
+      parameters:
+        - in: query
+          name: regionId
+          schema:
+            type: string
+            format: uuid
+          description: ID of the region to fetch locations
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+        - in: query
+          name: locationType
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: size
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: The locations has been found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationPage'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/image:
+    post:
+      tags:
+        - Image
+      description: Save a new image
+      operationId: saveImage
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                  format: uuid
+                  example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+                title:
+                  type: string
+                subtitle:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+            encoding:
+              image:
+                contentType: image/png
+      responses:
+        '200':
+          description: Image has been saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/image/{getImageId}:
+    get:
+      tags:
+        - Image
+      description: Get an image by it's ID
+      operationId: getImageById
+      parameters:
+        - in: path
+          name: getImageId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the image to get
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: Image has been found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/image/{delImageId}:
+    delete:
+      tags:
+        - Image
+      description: Delete an image using it's ID
+      operationId: deleteImageById
+      parameters:
+        - in: path
+          name: delImageId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the image to delete
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The image has been deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/images:
+    get:
+      tags:
+        - Image
+      description: Get all images
+      operationId: getAllImages
+      responses:
+        '200':
+          description: Images has been found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Image'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/image/download/{getImageId}:
+    get:
+      tags:
+        - Image
+      description: Download an image using it's ID
+      operationId: downloadImageById
+      parameters:
+        - in: path
+          name: getImageId
+          schema:
+            type: string
+          required: true
+          description: ID of the image to download
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: Image has been found
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/images/find:
+    get:
+      tags:
+        - Image
+      description: Get all images which pass the filter
+      operationId: getAllImagesFiltered
+      parameters:
+        - in: query
+          name: locationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the location
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: Images has been found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Image'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/location-info:
+    post:
+      tags:
+        - LocationInfo
+      description: Save a new location info
+      operationId: saveLocationInfo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationInfo'
+      responses:
+        '200':
+          description: Location info has been saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationInfo'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/location-info/{updateLocationInfoId}:
+    put:
+      tags:
+        - LocationInfo
+      description: Update existing location info
+      operationId: updateLocationInfo
+      parameters:
+        - in: path
+          name: updateLocationInfoId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the location info to update
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationInfo'
+      responses:
+        '200':
+          description: Location info has been updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationInfo'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/location-info/{getLocationInfoId}:
+    get:
+      tags:
+        - LocationInfo
+      description: Get an location info using it's ID
+      operationId: getLocationInfoById
+      parameters:
+        - in: path
+          name: getLocationInfoId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the location info to get
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: Location info has been found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationInfo'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/location-info/{delLocationInfoId}:
+    delete:
+      tags:
+        - LocationInfo
+      description: Delete a location info using it's ID
+      operationId: deleteLocationInfoById
+      parameters:
+        - in: path
+          name: delLocationInfoId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the location info to delete
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The location info has been deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationInfo'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/location-infos:
+    get:
+      tags:
+        - LocationInfo
+      description: Get an location info using it's ID
+      operationId: getAllLocationInfo
+      responses:
+        '200':
+          description: Location info has been found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LocationInfo'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/location-info/find:
+    get:
+      tags:
+        - LocationInfo
+      description: Get location info which pass the filter
+      operationId: getLocationInfoFiltered
+      parameters:
+        - in: query
+          name: locationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the location
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: Location info has been found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationInfo'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/area:
+    post:
+      tags:
+        - Area
+      description: Save a new area
+      operationId: saveArea
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Area'
+      responses:
+        '200':
+          description: The area has been saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Area'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/area/{updateAreaId}:
+    put:
+      tags:
+        - Area
+      description: Update existing area
+      operationId: updateArea
+      parameters:
+        - in: path
+          name: updateAreaId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the area to update
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Area'
+      responses:
+        '200':
+          description: The area has been updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Area'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/area/{getAreaId}:
+    get:
+      tags:
+        - Area
+      description: Get area using it's Id
+      operationId: getAreaById
+      parameters:
+        - in: path
+          name: getAreaId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the area to get
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: Processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Area'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/area/{delAreaId}:
+    delete:
+      tags:
+        - Area
+      description: Delete area using it's Id
+      operationId: delAreaById
+      parameters:
+        - in: path
+          name: delAreaId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the area to delete
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The area has been deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Area'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/areas:
+    get:
+      tags:
+        - Area
+      description: Get all areas
+      operationId: getAllAreas
+      responses:
+        '200':
+          description: Processed successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Area'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/areas/base/find:
+    get:
+      tags:
+        - Area
+      description: Get all areas without polygon
+      operationId: findAllBaseAreas
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            nullable: true
+          description: Filter areas by type
+        - in: query
+          name: wrapperAreaId
+          schema:
+            type: string
+            format: uuid
+            nullable: true
+          description: Id of the area to find inside
+      responses:
+        '200':
+          description: Processed successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BaseArea'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/areas/find:
+    get:
+      tags:
+        - Area
+      description: Get all areas filtered
+      operationId: findAllAreas
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            nullable: true
+          description: Filter areas by type
+        - in: query
+          name: wrapperAreaId
+          schema:
+            type: string
+            format: uuid
+            nullable: true
+          description: Id of the area to find inside
+      responses:
+        '200':
+          description: The locations has been found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Area'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/parking:
+    post:
+      tags:
+        - Parking
+      description: Save a new parking
+      operationId: saveParking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Parking'
+      responses:
+        '200':
+          description: Parking has been saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parking'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/parking/{updateParkingId}:
+    put:
+      tags:
+        - Parking
+      description: Update existing parking
+      operationId: updateParking
+      parameters:
+        - in: path
+          name: updateParkingId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the parking to update
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Parking'
+      responses:
+        '200':
+          description: Parking has been updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parking'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/parking/{getParkingId}:
+    get:
+      tags:
+        - Parking
+      description: Get a parking using it's ID
+      operationId: getParkingById
+      parameters:
+        - in: path
+          name: getParkingId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the parking to get
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The parking has been found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parking'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/parking/{delParkingId}:
+    delete:
+      tags:
+        - Parking
+      description: Delete a parking using it's ID
+      operationId: deleteParkingById
+      parameters:
+        - in: path
+          name: delParkingId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the parking to delete
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The parking has been deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parking'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/parkings:
+    get:
+      tags:
+        - Parking
+      description: Get all parkings
+      operationId: getAllParkings
+      responses:
+        '200':
+          description: The parkings has been found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Parking'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/parking/in-area/{areaId}:
+    get:
+      tags:
+        - Parking
+      description: Get all parking lots in area
+      operationId: getAllParkingLotsInArea
+      parameters:
+        - in: path
+          name: areaId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the area from where to fetch parking lots
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The parkings has been found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Parking'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/parking/in-radius:
+    get:
+      tags:
+        - Parking
+      description: Get all parking lots in area
+      operationId: getAllParkingLotsInRadius
+      parameters:
+        - in: query
+          name: latitude
+          schema:
+            type: number
+            format: double
+        - in: query
+          name: longitude
+          schema:
+            type: number
+            format: double
+        - in: query
+          name: radius
+          schema:
+            type: integer
+          description: In meters
+      responses:
+        '200':
+          description: The parkings has been found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Parking'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/road:
+    post:
+      tags:
+        - Road
+      description: Save a new road
+      operationId: saveRoad
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Road'
+      responses:
+        '200':
+          description: A new location has been created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Road'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/road/{getRoadId}:
+    get:
+      tags:
+        - Road
+      description: Get a road by ID
+      operationId: getRoadById
+      parameters:
+        - in: path
+          name: getRoadId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the road to get
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The road has been found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Road'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/road/{delRoadId}:
+    delete:
+      tags:
+        - Road
+      description: Delete a road using it's ID
+      operationId: deleteRoadById
+      parameters:
+        - in: path
+          name: delRoadId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the road to delete
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The road has been deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Road'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/roads:
+    get:
+      tags:
+        - Road
+      description: Get all roads
+      operationId: getAllRoads
+      responses:
+        '200':
+          description: The roads has been found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Road'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/road/find:
+    get:
+      tags:
+        - Road
+      description: Get all roads which pass the filter
+      operationId: getAllRoadsFiltered
+      parameters:
+        - in: query
+          name: locationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the location
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The road has been found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Road'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/post:
+    post:
+      tags:
+        - Post
+      description: Save a new post
+      operationId: savePost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+      responses:
+        '200':
+          description: A new post has been created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/post/{getPostId}:
+    get:
+      tags:
+        - Post
+      description: Get a post by ID
+      operationId: getPostById
+      parameters:
+        - in: path
+          name: getPostId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the post to get
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The post has been found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/post/{delPostId}:
+    delete:
+      tags:
+        - Post
+      description: Delete a post using it's ID
+      operationId: deletePostById
+      parameters:
+        - in: path
+          name: delPostId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the post to delete
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The post has been deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/posts:
+    get:
+      tags:
+        - Post
+      description: Get all post
+      operationId: getAllPosts
+      responses:
+        '200':
+          description: The posts has been found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/posts/base/find:
+    get:
+      tags:
+        - Post
+      description: Get all base post filtered
+      operationId: getAllBasePostsFiltered
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: size
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: regionId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the region to fetch locations
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+        - in: query
+          name: locationType
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The posts has been found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasePostPage'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/post-location:
+    post:
+      tags:
+        - PostLocation
+      description: Save a new post location
+      operationId: savePostLocation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostLocation'
+      responses:
+        '200':
+          description: A new post location has been created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostLocation'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/post-location/{getPostLocationId}:
+    get:
+      tags:
+        - PostLocation
+      description: Get a post location by ID
+      operationId: getPostLocationById
+      parameters:
+        - in: path
+          name: getPostLocationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the post location to get
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The post location has been found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostLocation'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/post-location/{delPostLocationId}:
+    delete:
+      tags:
+        - PostLocation
+      description: Delete a post location using it's ID
+      operationId: deletePostLocationById
+      parameters:
+        - in: path
+          name: delPostLocationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the post location to delete
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The post location has been deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostLocation'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/post-locations:
+    get:
+      tags:
+        - PostLocation
+      description: Get all post locations
+      operationId: getAllPostLocations
+      responses:
+        '200':
+          description: The post locations has been found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostLocation'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/post-locations/location/{locationId}:
+    get:
+      tags:
+        - PostLocation
+      description: Get all post locations related to a location
+      operationId: getAllPostLocationsByLocation
+      parameters:
+        - in: path
+          name: locationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the post location to delete
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The post locations has been found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostLocation'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/post-locations/location/find:
+    get:
+      tags:
+        - PostLocation
+      description: Get all post locations inside an area
+      operationId: getAllPostLocationsFiltered
+      parameters:
+        - in: query
+          name: areaId
+          schema:
+            type: string
+            format: uuid
+          description: ID of the post location to delete
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: size
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: The post locations has been found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostLocationPage'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/post-locations/post/{postId}:
+    get:
+      tags:
+        - PostLocation
+      description: Get all post locations related to a post
+      operationId: getAllPostLocationsByPost
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the post location to delete
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The post locations has been found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostLocation'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/top-location:
+    post:
+      tags:
+        - TopLocation
+      description: Save a new top location
+      operationId: saveTopLocation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TopLocation'
+      responses:
+        '200':
+          description: A new post location has been created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopLocation'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/top-location/{updateTopLocationId}:
+    put:
+      tags:
+        - TopLocation
+      description: Update existing top location
+      operationId: updateTopLocation
+      parameters:
+        - in: path
+          name: updateTopLocationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the top location to update
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TopLocation'
+      responses:
+        '200':
+          description: A new top location has been updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopLocation'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/top-location/{getTopLocationId}:
+    get:
+      tags:
+        - TopLocation
+      description: Get a top location by ID
+      operationId: getTopLocationById
+      parameters:
+        - in: path
+          name: getTopLocationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the top location to get
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The top location has been found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopLocation'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/top-location/{delTopLocationId}:
+    delete:
+      tags:
+        - TopLocation
+      description: Delete a top location using it's ID
+      operationId: deleteTopLocationById
+      parameters:
+        - in: path
+          name: delTopLocationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the top location to delete
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The top location has been deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopLocation'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/top-locations:
+    get:
+      tags:
+        - TopLocation
+      description: Get all top locations
+      operationId: getAllTopLocations
+      responses:
+        '200':
+          description: The top locations has been found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TopLocation'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/top-locations/area/{areaId}:
+    get:
+      tags:
+        - TopLocation
+      description: Get all top locations related to a area
+      operationId: getAllTopLocationsByArea
+      parameters:
+        - in: path
+          name: areaId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the area
+          example: a0e973e2-1a9c-11ee-be56-0242ac120002
+      responses:
+        '200':
+          description: The top locations has been found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TopLocation'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    # -------------------------------------------------------------------------------------
+    Page:
+      required:
+        - total_pages
+        - total_elements
+      properties:
+        total_pages:
+          type: integer
+        total_elements:
+          type: integer
+          format: int64
+    # -------------------------------------------------------------------------------------
+    LineString:
+      required:
+        - coordinates
+      properties:
+        coordinates:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+              format: double
+            minItems: 2
+            maxItems: 2
+          minItems: 2
+    # -------------------------------------------------------------------------------------
+    Polygon:
+      required:
+        - coordinates
+      properties:
+        coordinates:
+          type: array
+          items:
+            type: array
+            items:
+              type: array
+              items:
+                type: number
+                format: double
+              minItems: 2
+              maxItems: 2
+            minItems: 4
+    # -------------------------------------------------------------------------------------
+    Location:
+      required:
+        - id
+        - name
+        - type
+        - description
+        - coordinates
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+        name:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+        coordinates:
+          type: array
+          items:
+            type: number
+            format: double
+          minItems: 2
+          maxItems: 2
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    # -------------------------------------------------------------------------------------
+    LocationPage:
+      required:
+        - total_pages
+        - total_elements
+        - elements
+      allOf:
+        - $ref: '#/components/schemas/Page'
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+    # -------------------------------------------------------------------------------------
+    Parking:
+      required:
+        - id
+        - type
+        - space
+        - places
+        - free_park_time
+        - polygon
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+        type:
+          type: string
+          enum:
+            - CLIENTS_ONLY
+            - STAFF_ONLY
+            - PRIVATE
+            - PUBLIC
+            - TAXI
+        space:
+          type: string
+          enum:
+            - GARAGE
+            - STREET
+            - LOT
+        places:
+          type: integer
+        free_time:
+          type: integer
+        polygon:
+          $ref: '#/components/schemas/Polygon'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    # -------------------------------------------------------------------------------------
+    Road:
+      required:
+        - id
+        - location
+        - line
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+        location:
+          type: string
+          format: uuid
+          example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+        line:
+          $ref: '#/components/schemas/LineString'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    # -------------------------------------------------------------------------------------
+    BaseArea:
+      required:
+        - id
+        - name
+        - type
+        - description
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+        name:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+
+    Area:
+      type: object
+      required:
+        - polygon
+      allOf:
+        - $ref: '#/components/schemas/BaseArea'
+      properties:
+        polygon:
+          $ref: '#/components/schemas/Polygon'
+    # -------------------------------------------------------------------------------------
+    Image:
+      required:
+        - id
+        - location
+        - title
+        - subtitle
+        - small
+        - medium
+        - large
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+        location:
+          type: string
+          format: uuid
+          readOnly: true
+          example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+        title:
+          type: string
+        subtitle:
+          type: string
+        small:
+          type: string
+        medium:
+          type: string
+        large:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    # -------------------------------------------------------------------------------------
+    LocationInfo:
+      required:
+        - id
+        - location
+        - title
+        - subtitle
+        - content
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+        location:
+          type: string
+          format: uuid
+          example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+        title:
+          type: string
+        subtitle:
+          type: string
+        content:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    # -------------------------------------------------------------------------------------
+    BasePost:
+      required:
+        - id
+        - title
+        - subtitle
+        - description
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+        title:
+          type: string
+        subtitle:
+          type: string
+        description:
+          type: string
+    # -------------------------------------------------------------------------------------
+    BasePostPage:
+      required:
+        - total_pages
+        - total_elements
+        - elements
+      allOf:
+        - $ref: '#/components/schemas/Page'
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/BasePost'
+    # -------------------------------------------------------------------------------------
+    Post:
+      type: object
+      required:
+        - content
+      allOf:
+        - $ref: '#/components/schemas/BasePost'
+      properties:
+        content:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    # -------------------------------------------------------------------------------------
+    PostLocation:
+      required:
+        - id
+        - post
+        - location
+        - sequence
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+        post:
+          type: string
+          format: uuid
+          example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+        location:
+          type: string
+          format: uuid
+          example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+        sequence:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    # -------------------------------------------------------------------------------------
+    PostLocationFull:
+      allOf:
+        - $ref: '#/components/schemas/PostLocation'
+        - type: object
+          properties:
+            location:
+              $ref: '#/components/schemas/Location'
+    # -------------------------------------------------------------------------------------
+    PostLocationPage:
+      required:
+        - total_pages
+        - total_elements
+        - elements
+      allOf:
+        - $ref: '#/components/schemas/Page'
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/PostLocationFull'
+    # -------------------------------------------------------------------------------------
+    TopLocation:
+      required:
+        - id
+        - area
+        - location
+        - position
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+        area:
+          type: string
+          format: uuid
+          example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+        location:
+          type: string
+          format: uuid
+          example: 'a0e973e2-1a9c-11ee-be56-0242ac120002'
+        position:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    # -------------------------------------------------------------------------------------
+    Error:
+      required:
+        - code
+        - summary
+        - details
+      properties:
+        code:
+          type: string
+          example: "ERR_{nr}"
+        summary:
+          type: string
+          example: "Short description"
+        details:
+          type: string
+          example: "Detailed description"
